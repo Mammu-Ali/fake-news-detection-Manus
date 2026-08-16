@@ -32,3 +32,22 @@
 - [x] Add a filtered and sorted history test using representative prediction rows
 
 - [x] Add a deterministic history behavior test that verifies representative rows are filtered and sorted by verdict, confidence, and date constraints
+
+## Admin dashboard extension
+
+- [x] Add admin-only navigation and protected admin route
+- [x] Add dataset records and admin dataset management workflow
+- [x] Support dataset metadata, upload/status actions, and deletion with admin authorization
+- [x] Add model evaluation metrics dashboard with accuracy, precision, recall, F1, confusion matrix, and dataset summary
+- [x] Add admin backend procedures and database persistence
+- [x] Add Vitest coverage for admin authorization, dataset operations, and metric input validation
+- [x] Verify admin dashboard responsiveness and save a new checkpoint
+
+## Admin gap remediation
+
+- [x] Add admin dataset deletion while retaining archive status
+- [x] Persist dataset file metadata through managed storage rather than only local parsing
+- [x] Add confusion matrix visualization and dedicated dataset summary cards
+- [x] Add Vitest coverage for dataset create/archive/delete success paths and metric input validation
+- [x] Capture admin mobile and tablet screenshots
+- [x] Save a new checkpoint after the admin extension is complete

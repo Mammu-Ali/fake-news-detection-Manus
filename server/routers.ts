@@ -3,7 +3,8 @@ import { invokeLLM } from "./_core/llm";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { archiveDataset, createDataset, createModelMetric, deleteDataset, listDatasets, listModelMetrics } from "./adminDb";
 import { createPrediction, deletePrediction, getPredictionStats, listPredictions } from "./db";
 
 const predictionSchema = {
@@ -30,6 +31,18 @@ export const appRouter = router({
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
+    }),
+  }),
+  admin: router({
+    datasets: router({
+      list: adminProcedure.query(() => listDatasets()),
+      create: adminProcedure.input(z.object({ name: z.string().min(2).max(180), description: z.string().max(2000).default(""), fileName: z.string().min(1).max(255), fileContentBase64: z.string().optional(), recordCount: z.number().int().min(0), fakeCount: z.number().int().min(0), realCount: z.number().int().min(0), version: z.string().min(1).max(32) })).mutation(({ ctx, input }) => createDataset({ ...input, status: "ready", uploadedBy: ctx.user.id })),
+      archive: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => archiveDataset(input.id)),
+      remove: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deleteDataset(input.id)),
+    }),
+    metrics: router({
+      list: adminProcedure.query(() => listModelMetrics()),
+      create: adminProcedure.input(z.object({ modelName: z.string().min(2).max(120), datasetName: z.string().min(2).max(180), accuracy: z.number().int().min(0).max(100), precision: z.number().int().min(0).max(100), recall: z.number().int().min(0).max(100), f1Score: z.number().int().min(0).max(100), truePositive: z.number().int().min(0), trueNegative: z.number().int().min(0), falsePositive: z.number().int().min(0), falseNegative: z.number().int().min(0) })).mutation(({ input }) => createModelMetric(input)),
     }),
   }),
   predictions: router({

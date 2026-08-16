@@ -22,6 +22,20 @@
       "when": 1786901406583,
       "tag": "0002_short_prodigy",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1786901912630,
+      "tag": "0003_premium_sister_grimm",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1786902157437,
+      "tag": "0004_sticky_shiva",
+      "breakpoints": true
     }
   ]
 }

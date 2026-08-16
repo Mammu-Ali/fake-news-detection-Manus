@@ -12,6 +12,37 @@ export const users = mysqlTable("users", {
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 
+export const datasets = mysqlTable("datasets", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 180 }).notNull(),
+  description: text("description").notNull(),
+  fileName: varchar("fileName", { length: 255 }).notNull(),
+  storageKey: varchar("storageKey", { length: 500 }),
+  storageUrl: varchar("storageUrl", { length: 600 }),
+  recordCount: int("recordCount").notNull(),
+  fakeCount: int("fakeCount").notNull(),
+  realCount: int("realCount").notNull(),
+  status: mysqlEnum("status", ["ready", "processing", "archived"]).default("ready").notNull(),
+  version: varchar("version", { length: 32 }).notNull(),
+  uploadedBy: int("uploadedBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const modelMetrics = mysqlTable("modelMetrics", {
+  id: int("id").autoincrement().primaryKey(),
+  modelName: varchar("modelName", { length: 120 }).notNull(),
+  datasetName: varchar("datasetName", { length: 180 }).notNull(),
+  accuracy: int("accuracy").notNull(),
+  precision: int("precision").notNull(),
+  recall: int("recall").notNull(),
+  f1Score: int("f1Score").notNull(),
+  truePositive: int("truePositive").notNull(),
+  trueNegative: int("trueNegative").notNull(),
+  falsePositive: int("falsePositive").notNull(),
+  falseNegative: int("falseNegative").notNull(),
+  evaluatedAt: timestamp("evaluatedAt").defaultNow().notNull(),
+});
+
 export const predictions = mysqlTable("predictions", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
@@ -30,5 +61,9 @@ export const predictions = mysqlTable("predictions", {
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+export type Dataset = typeof datasets.$inferSelect;
+export type InsertDataset = typeof datasets.$inferInsert;
+export type ModelMetric = typeof modelMetrics.$inferSelect;
+export type InsertModelMetric = typeof modelMetrics.$inferInsert;
 export type Prediction = typeof predictions.$inferSelect;
 export type InsertPrediction = typeof predictions.$inferInsert;
