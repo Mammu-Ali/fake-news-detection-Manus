@@ -73,3 +73,25 @@
 
 - [x] Add explicit dataclass model abstractions for users, predictions, datasets, and model metrics
 - [x] Deliver the verified Flask backend boilerplate to the user
+
+## React frontend reference implementation
+
+- [x] Create a separate React.js and Tailwind CSS frontend without replacing the managed frontend
+- [x] Add Flask API client, environment configuration, and token persistence
+- [x] Add login/register/current-user authentication screens
+- [x] Add article analysis input and structured result explanation UI
+- [x] Add prediction statistics and history filters/deletion UI
+- [x] Add admin dataset lifecycle and model evaluation UI
+- [x] Add responsive cyberpunk styling and API error/loading states
+- [x] Add frontend build verification and setup documentation
+
+## React frontend gap remediation
+
+- [x] Render highlighted phrases from the Flask analysis response in the result UI
+- [x] Implement the complete admin model-evaluation form and submit it through the Flask API client
+- [x] Re-review the frontend against the full Flask response contract
+
+## React frontend final verification
+
+- [x] Add visible error handling and non-negative integer validation to admin metric submission
+- [x] Perform a systematic frontend-to-Flask API contract verification pass across auth, prediction, history, dataset, and metric routes
