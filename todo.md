@@ -51,3 +51,25 @@
 - [x] Add Vitest coverage for dataset create/archive/delete success paths and metric input validation
 - [x] Capture admin mobile and tablet screenshots
 - [x] Save a new checkpoint after the admin extension is complete
+
+## Documentation deliverables
+
+- [x] Create a complete SRS covering the approved PRD, implemented product behavior, architecture adaptation, data model, security, testing, deployment, assumptions, constraints, and future enhancements
+
+- [x] Rewrite and finalize the SRS after validation, then re-review it against the PRD, implemented features, architecture adaptation, data model, security, testing, deployment, assumptions, constraints, and future enhancements
+
+## Flask backend reference implementation
+
+- [x] Create a separate Flask/Python backend boilerplate without replacing the managed WebApp runtime
+- [x] Add environment configuration, dependency manifest, and application factory
+- [x] Add JWT-ready authentication and role-based admin authorization scaffolding
+- [x] Add MongoDB model/repository abstractions for users, predictions, datasets, and model metrics
+- [x] Add prediction, explanation, history, dataset, and evaluation API blueprints
+- [x] Add plain-text validation and structured response schemas
+- [x] Add Flask backend tests and setup documentation
+- [x] Run syntax and test verification and deliver the boilerplate
+
+## Flask boilerplate finalization
+
+- [x] Add explicit dataclass model abstractions for users, predictions, datasets, and model metrics
+- [x] Deliver the verified Flask backend boilerplate to the user
