@@ -115,3 +115,23 @@
 - [x] Run checks and save a checkpoint for the animation update
 
 - [x] Save a new checkpoint after the landing-button glitch animation update
+
+## User Login bug
+
+- [x] Diagnose why the local User Login button does not complete authentication
+- [x] Add a clear local configuration/error path if OAuth variables or callback settings are unavailable
+- [x] Verify the repaired login flow and save a checkpoint
+
+## Login end-to-end recovery
+
+- [x] Add a callback recovery redirect so provider-side OAuth failures return to the styled login page with a readable error
+- [x] Add a safe login error query-state renderer and verify invalid or failed callback recovery
+- [x] Perform the final checkpoint after the end-to-end login fix
+
+- [x] Obtain a successful OAuth login verification in the user’s local browser, since sandbox callback tests and local configuration recovery paths are verified; real provider sign-in still requires the user’s OAuth account
+
+## Login button repair
+
+- [x] Make the User Login button reliably invoke OAuth from a direct button handler
+- [x] Add a visible fallback when local OAuth configuration is unavailable
+- [ ] Verify the button build and interaction path, then save a checkpoint

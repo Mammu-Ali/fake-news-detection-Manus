@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Binary, LogIn, ArrowUpRight, ArrowLeft, ShieldCheck } from "lucide-react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -7,6 +7,31 @@ import { startLogin } from "@/const";
 export default function Login() {
   const { isAuthenticated, loading } = useAuth();
   const [, navigate] = useLocation();
+  const [loginError, setLoginError] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const code = new URLSearchParams(window.location.search).get("error");
+    if (code === "missing_oauth_params") return "The OAuth provider did not return the required login parameters.";
+    if (code === "invalid_oauth_state") return "This login session expired or was opened in another browser tab. Start again.";
+    if (code === "oauth_callback_failed") return "The OAuth provider could not complete this login. Check the local callback configuration and try again.";
+    return "";
+  });
+  const [loginStatus, setLoginStatus] = useState("");
+
+  const handleLogin = () => {
+    setLoginError("");
+    setLoginStatus("OPENING_OAUTH_GATE...");
+    if (typeof window !== "undefined") window.history.replaceState({}, "", "/login");
+    try {
+      startLogin();
+      window.setTimeout(() => {
+        setLoginStatus("");
+        setLoginError("OAuth did not open. Check your local OAuth variables and callback URL, then try again.");
+      }, 1800);
+    } catch (error) {
+      setLoginStatus("");
+      setLoginError(error instanceof Error ? error.message : "Unable to start OAuth login");
+    }
+  };
 
   useEffect(() => {
     if (!loading && isAuthenticated) navigate("/dashboard");
@@ -23,7 +48,9 @@ export default function Login() {
       <div className="eyebrow cyan">[ USER ACCESS / AUTHENTICATED NODE ]</div>
       <h1 id="login-title">Enter the<br /><span>signal room.</span></h1>
       <p className="login-copy">Sign in as a user to analyze article signals, review your prediction history, and continue your verification workflow.</p>
-      <button className="detect-button login-button" onClick={() => startLogin()}><LogIn size={16} /> USER LOGIN <ArrowUpRight size={16} /></button>
+      <button type="button" className="detect-button login-button" onClick={handleLogin} disabled={Boolean(loginStatus)}><LogIn size={16} /> {loginStatus ? "CONNECTING..." : "USER LOGIN"} <ArrowUpRight size={16} /></button>
+      {loginStatus && <div className="login-status" role="status">{loginStatus}</div>}
+      {loginError && <div className="login-error" role="alert"><strong>AUTH GATE ERROR</strong><span>{loginError}</span><small>For a local clone, configure VITE_APP_ID and VITE_OAUTH_PORTAL_URL before starting Vite.</small></div>}
       <div className="login-assurance"><ShieldCheck size={15} /><span>OAuth session · protected dashboard · private history</span></div>
       <button className="back-link" onClick={() => navigate("/")}><ArrowLeft size={14} /> Return to public node</button>
     </section>
