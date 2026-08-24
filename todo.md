@@ -136,4 +136,4 @@
 - [x] Add a visible fallback when local OAuth configuration is unavailable
 - [x] Verify the button build and interaction path, then save a checkpoint
 
-- [ ] Save a fresh checkpoint after the final login-button repair changes
+- [x] Save a fresh checkpoint after the final login-button repair changes
