@@ -26,6 +26,11 @@ const predictionSchema = {
 export const appRouter = router({
   system: systemRouter,
   auth: router({
+    config: publicProcedure.query(() => ({
+      appId: process.env.VITE_APP_ID ?? "",
+      oauthPortalUrl: process.env.VITE_OAUTH_PORTAL_URL ?? "",
+      localDemoEnabled: process.env.NODE_ENV === "development",
+    })),
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);

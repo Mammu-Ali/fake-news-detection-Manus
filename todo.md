@@ -151,3 +151,6 @@
 - [x] Re-run verification and save a checkpoint for the local login fix
 - [x] Use a browser-compatible SameSite policy for insecure localhost demo sessions and verify the dashboard UI authenticates
 - [x] Re-run checks and save a final checkpoint after the browser cookie fix
+- [x] Fix the reported login failure shown by the AUTH GATE ERROR screen
+- [x] Verify local demo login and hosted OAuth configuration behavior end to end
+- [x] Re-run authentication tests and save a checkpoint after the login fix

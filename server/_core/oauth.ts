@@ -64,7 +64,12 @@ export function registerOAuthRoutes(app: Express) {
       redirectOAuthError(res, "invalid_oauth_state");
       return;
     }
-    res.clearCookie(OAUTH_STATE_COOKIE, { path: "/", secure: true, sameSite: "none" });
+    const stateCookieOptions = getSessionCookieOptions(req);
+    res.clearCookie(OAUTH_STATE_COOKIE, {
+      path: stateCookieOptions.path,
+      secure: stateCookieOptions.secure,
+      sameSite: stateCookieOptions.sameSite,
+    });
 
     try {
       const tokenResponse = await sdk.exchangeCodeForToken(code, state);
