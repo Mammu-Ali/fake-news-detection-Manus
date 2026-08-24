@@ -12,6 +12,7 @@ function Router() {
     <Route path="/" component={Home} />
     <Route path="/login" component={Login} />
     <Route path="/dashboard" component={Home} />
+    <Route path="/guest" component={Home} />
     <Route path="/history" component={Home} />
     <Route path="/admin" component={Home} />
     <Route path="/404" component={NotFound} />

@@ -154,3 +154,8 @@
 - [x] Fix the reported login failure shown by the AUTH GATE ERROR screen
 - [x] Verify local demo login and hosted OAuth configuration behavior end to end
 - [x] Re-run authentication tests and save a checkpoint after the login fix
+- [x] Add a guest mode entry point from the public landing page
+- [x] Add unauthenticated guest article analysis without persisting private history
+- [x] Keep history, statistics, logout, and admin features protected for signed-in users
+- [x] Add guest-access tests and verify desktop/mobile guest flows
+- [x] Save a checkpoint after guest access is verified

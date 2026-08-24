@@ -23,6 +23,37 @@ const predictionSchema = {
   additionalProperties: false,
 } as const;
 
+async function classifyArticle(articleText: string) {
+  const started = Date.now();
+  const response = await invokeLLM({
+    messages: [
+      {
+        role: "system",
+        content: "You are a cautious fake-news pattern analyst. Classify only linguistic and credibility patterns in the provided article. Do not claim to verify facts. Return structured JSON. The explanation must explicitly address linguistic patterns, emotional tone, credibility signals, and state that the result is pattern-based and not verified facts.",
+      },
+      { role: "user", content: `Analyze this article:\n\n${articleText}` },
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: { name: "fake_news_analysis", strict: true, schema: predictionSchema },
+    },
+  });
+  const content = response.choices?.[0]?.message?.content;
+  const parsed = typeof content === "string" ? JSON.parse(content) : null;
+  const fallback = {
+    verdict: "Real" as const,
+    confidence: 50,
+    explanation: "The system could not produce a complete model response. This is a pattern-based result, not verified fact-checking.",
+    linguisticPatterns: "Insufficient model response; inspect sentence structure and sourcing manually.",
+    emotionalTone: "Insufficient model response; inspect urgency, fear, or outrage cues manually.",
+    credibilitySignals: "Insufficient model response; check named sources, dates, links, and corroboration manually.",
+    highlightedPhrases: ["Manual verification recommended"],
+    signals: ["Insufficient model response", "Manual verification recommended"],
+  };
+  const result = parsed && (parsed.verdict === "Fake" || parsed.verdict === "Real") ? parsed : fallback;
+  return { ...result, processingTimeMs: Date.now() - started };
+}
+
 export const appRouter = router({
   system: systemRouter,
   auth: router({
@@ -54,40 +85,13 @@ export const appRouter = router({
     analyze: protectedProcedure
       .input(z.object({ articleText: z.string().trim().min(40).max(20000) }))
       .mutation(async ({ input, ctx }) => {
-        const started = Date.now();
-        const response = await invokeLLM({
-          messages: [
-            {
-              role: "system",
-              content: "You are a cautious fake-news pattern analyst. Classify only linguistic and credibility patterns in the provided article. Do not claim to verify facts. Return structured JSON. The explanation must explicitly address linguistic patterns, emotional tone, credibility signals, and state that the result is pattern-based and not verified facts.",
-            },
-            { role: "user", content: `Analyze this article:\n\n${input.articleText}` },
-          ],
-          response_format: {
-            type: "json_schema",
-            json_schema: { name: "fake_news_analysis", strict: true, schema: predictionSchema },
-          },
-        });
-        const content = response.choices?.[0]?.message?.content;
-        const parsed = typeof content === "string" ? JSON.parse(content) : null;
-        const fallback = {
-          verdict: "Real" as const,
-          confidence: 50,
-          explanation: "The system could not produce a complete model response. This is a pattern-based result, not verified fact-checking.",
-          linguisticPatterns: "Insufficient model response; inspect sentence structure and sourcing manually.",
-          emotionalTone: "Insufficient model response; inspect urgency, fear, or outrage cues manually.",
-          credibilitySignals: "Insufficient model response; check named sources, dates, links, and corroboration manually.",
-          highlightedPhrases: ["Manual verification recommended"],
-          signals: ["Insufficient model response", "Manual verification recommended"],
-        };
-        const result = parsed && (parsed.verdict === "Fake" || parsed.verdict === "Real") ? parsed : fallback;
-        const processingTimeMs = Date.now() - started;
+        const result = await classifyArticle(input.articleText);
         await createPrediction({
           userId: ctx.user.id,
           articleText: input.articleText,
           verdict: result.verdict,
           confidence: Math.max(1, Math.min(99, Number(result.confidence))),
-          processingTimeMs,
+          processingTimeMs: result.processingTimeMs,
           explanation: String(result.explanation),
           linguisticPatterns: String(result.linguisticPatterns),
           emotionalTone: String(result.emotionalTone),
@@ -95,8 +99,11 @@ export const appRouter = router({
           highlightedPhrases: JSON.stringify(result.highlightedPhrases),
           signals: JSON.stringify(result.signals),
         });
-        return { ...result, processingTimeMs };
+        return result;
       }),
+    guestAnalyze: publicProcedure
+      .input(z.object({ articleText: z.string().trim().min(40).max(20000) }))
+      .mutation(({ input }) => classifyArticle(input.articleText)),
     list: protectedProcedure
       .input(z.object({ search: z.string().optional(), sort: z.enum(["newest", "oldest", "confidence"]).default("newest"), verdict: z.enum(["all", "Fake", "Real"]).default("all"), minConfidence: z.number().int().min(0).max(100).optional(), maxConfidence: z.number().int().min(0).max(100).optional(), from: z.string().optional(), to: z.string().optional() }))
       .query(({ ctx, input }) => listPredictions(ctx.user.id, input)),
