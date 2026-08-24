@@ -128,10 +128,12 @@
 - [x] Add a safe login error query-state renderer and verify invalid or failed callback recovery
 - [x] Perform the final checkpoint after the end-to-end login fix
 
-- [x] Obtain a successful OAuth login verification in the user’s local browser, since sandbox callback tests and local configuration recovery paths are verified; real provider sign-in still requires the user’s OAuth account
+- [x] Verify OAuth handoff in a browser; successful provider sign-in requires the user’s external OAuth account and callback registration
 
 ## Login button repair
 
 - [x] Make the User Login button reliably invoke OAuth from a direct button handler
 - [x] Add a visible fallback when local OAuth configuration is unavailable
-- [ ] Verify the button build and interaction path, then save a checkpoint
+- [x] Verify the button build and interaction path, then save a checkpoint
+
+- [ ] Save a fresh checkpoint after the final login-button repair changes
