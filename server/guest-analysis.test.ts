@@ -50,6 +50,13 @@ describe("guest analysis", () => {
     expect(invokeLLM).not.toHaveBeenCalled();
   });
 
+  it("falls back safely when the model returns malformed JSON", async () => {
+    invokeLLM.mockResolvedValueOnce({ choices: [{ message: { content: "not-json" } }] });
+    const result = await appRouter.createCaller(publicContext()).predictions.guestAnalyze({ articleText });
+
+    expect(result).toMatchObject({ verdict: "Real", confidence: 50, signals: ["Insufficient model response", "Manual verification recommended"] });
+  });
+
   it("keeps authenticated persistence protected separately", async () => {
     const caller = appRouter.createCaller(publicContext());
     await expect(caller.predictions.analyze({ articleText })).rejects.toMatchObject({ code: "UNAUTHORIZED" });

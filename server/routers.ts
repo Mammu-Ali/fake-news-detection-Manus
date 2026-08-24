@@ -23,6 +23,47 @@ const predictionSchema = {
   additionalProperties: false,
 } as const;
 
+type ClassifiedResult = {
+  verdict: "Fake" | "Real";
+  confidence: number;
+  explanation: string;
+  linguisticPatterns: string;
+  emotionalTone: string;
+  credibilitySignals: string;
+  highlightedPhrases: string[];
+  signals: string[];
+};
+
+const fallbackAnalysis: ClassifiedResult = {
+  verdict: "Real",
+  confidence: 50,
+  explanation: "The system could not produce a complete model response. This is a pattern-based result, not verified fact-checking.",
+  linguisticPatterns: "Insufficient model response; inspect sentence structure and sourcing manually.",
+  emotionalTone: "Insufficient model response; inspect urgency, fear, or outrage cues manually.",
+  credibilitySignals: "Insufficient model response; check named sources, dates, links, and corroboration manually.",
+  highlightedPhrases: ["Manual verification recommended"],
+  signals: ["Insufficient model response", "Manual verification recommended"],
+};
+
+function normalizeAnalysis(value: unknown): ClassifiedResult {
+  if (!value || typeof value !== "object") return fallbackAnalysis;
+  const candidate = value as Record<string, unknown>;
+  if (candidate.verdict !== "Fake" && candidate.verdict !== "Real") return fallbackAnalysis;
+  const confidence = Number(candidate.confidence);
+  const highlightedPhrases = Array.isArray(candidate.highlightedPhrases) ? candidate.highlightedPhrases.filter((item): item is string => typeof item === "string").slice(0, 6) : [];
+  const signals = Array.isArray(candidate.signals) ? candidate.signals.filter((item): item is string => typeof item === "string").slice(0, 5) : [];
+  return {
+    verdict: candidate.verdict,
+    confidence: Number.isFinite(confidence) ? Math.max(1, Math.min(99, Math.round(confidence))) : fallbackAnalysis.confidence,
+    explanation: typeof candidate.explanation === "string" ? candidate.explanation : fallbackAnalysis.explanation,
+    linguisticPatterns: typeof candidate.linguisticPatterns === "string" ? candidate.linguisticPatterns : fallbackAnalysis.linguisticPatterns,
+    emotionalTone: typeof candidate.emotionalTone === "string" ? candidate.emotionalTone : fallbackAnalysis.emotionalTone,
+    credibilitySignals: typeof candidate.credibilitySignals === "string" ? candidate.credibilitySignals : fallbackAnalysis.credibilitySignals,
+    highlightedPhrases: highlightedPhrases.length ? highlightedPhrases : fallbackAnalysis.highlightedPhrases,
+    signals: signals.length >= 2 ? signals : fallbackAnalysis.signals,
+  };
+}
+
 async function classifyArticle(articleText: string) {
   const started = Date.now();
   const response = await invokeLLM({
@@ -39,19 +80,13 @@ async function classifyArticle(articleText: string) {
     },
   });
   const content = response.choices?.[0]?.message?.content;
-  const parsed = typeof content === "string" ? JSON.parse(content) : null;
-  const fallback = {
-    verdict: "Real" as const,
-    confidence: 50,
-    explanation: "The system could not produce a complete model response. This is a pattern-based result, not verified fact-checking.",
-    linguisticPatterns: "Insufficient model response; inspect sentence structure and sourcing manually.",
-    emotionalTone: "Insufficient model response; inspect urgency, fear, or outrage cues manually.",
-    credibilitySignals: "Insufficient model response; check named sources, dates, links, and corroboration manually.",
-    highlightedPhrases: ["Manual verification recommended"],
-    signals: ["Insufficient model response", "Manual verification recommended"],
-  };
-  const result = parsed && (parsed.verdict === "Fake" || parsed.verdict === "Real") ? parsed : fallback;
-  return { ...result, processingTimeMs: Date.now() - started };
+  let parsed: unknown = null;
+  try {
+    parsed = typeof content === "string" ? JSON.parse(content) : null;
+  } catch {
+    parsed = null;
+  }
+  return { ...normalizeAnalysis(parsed), processingTimeMs: Date.now() - started };
 }
 
 export const appRouter = router({

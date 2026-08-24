@@ -1,4 +1,4 @@
-import { OAUTH_STATE_COOKIE, encodeOAuthState } from "@shared/const";
+import { encodeOAuthState, getOAuthStateCookieName } from "@shared/const";
 
 export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
@@ -39,7 +39,8 @@ export const startLogin = (runtimeConfig?: Partial<RuntimeAuthConfig>) => {
   const nonce = crypto.randomUUID();
   const isSecure = window.location.protocol === "https:";
   const cookieAttributes = `Path=/; Max-Age=600; SameSite=${isSecure ? "None" : "Lax"}${isSecure ? "; Secure" : ""}`;
-  document.cookie = `${OAUTH_STATE_COOKIE}=${nonce}; ${cookieAttributes}`;
+  const stateCookieName = getOAuthStateCookieName(isSecure);
+  document.cookie = `${stateCookieName}=${nonce}; ${cookieAttributes}`;
   const state = encodeOAuthState({ redirectUri, nonce });
 
   const url = new URL(`${oauthPortalUrl}/app-auth`);

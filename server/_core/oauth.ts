@@ -1,4 +1,4 @@
-import { COOKIE_NAME, ONE_YEAR_MS, OAUTH_STATE_COOKIE, decodeOAuthState } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS, decodeOAuthState, getOAuthStateCookieName } from "@shared/const";
 import { parse as parseCookieHeader } from "cookie";
 import type { Express, Request, Response } from "express";
 import * as db from "../db";
@@ -59,13 +59,14 @@ export function registerOAuthRoutes(app: Express) {
       redirectOAuthError(res, "invalid_oauth_state");
       return;
     }
-    const expectedNonce = parseCookieHeader(req.headers.cookie ?? "")[OAUTH_STATE_COOKIE];
+    const stateCookieOptions = getSessionCookieOptions(req);
+    const stateCookieName = getOAuthStateCookieName(Boolean(stateCookieOptions.secure));
+    const expectedNonce = parseCookieHeader(req.headers.cookie ?? "")[stateCookieName];
     if (!nonce || nonce !== expectedNonce) {
       redirectOAuthError(res, "invalid_oauth_state");
       return;
     }
-    const stateCookieOptions = getSessionCookieOptions(req);
-    res.clearCookie(OAUTH_STATE_COOKIE, {
+    res.clearCookie(stateCookieName, {
       path: stateCookieOptions.path,
       secure: stateCookieOptions.secure,
       sameSite: stateCookieOptions.sameSite,

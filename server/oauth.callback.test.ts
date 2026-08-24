@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { encodeOAuthState, OAUTH_STATE_COOKIE } from "../shared/const";
+import { encodeOAuthState, getOAuthStateCookieName } from "../shared/const";
 import { registerOAuthRoutes } from "./_core/oauth";
 import { sdk } from "./_core/sdk";
 
@@ -48,8 +48,25 @@ describe("OAuth callback recovery", () => {
     const exchange = vi.spyOn(sdk, "exchangeCodeForToken").mockRejectedValueOnce(new Error("provider unavailable"));
 
     await getCallbackHandler()({
+      protocol: "http",
       query: { code: "code", state },
-      headers: { cookie: `${OAUTH_STATE_COOKIE}=test-nonce` },
+      headers: { cookie: `${getOAuthStateCookieName(false)}=test-nonce` },
+    }, response);
+
+    expect(response.cleared).toBe(true);
+    expect(response.redirects).toEqual(["/login?error=oauth_callback_failed"]);
+    exchange.mockRestore();
+  });
+
+  it("accepts and clears the secure nonce cookie for HTTPS callbacks", async () => {
+    const state = encodeOAuthState({ redirectUri: "https://preview.example/api/oauth/callback", nonce: "secure-nonce" });
+    const response = createResponse();
+    const exchange = vi.spyOn(sdk, "exchangeCodeForToken").mockRejectedValueOnce(new Error("provider unavailable"));
+
+    await getCallbackHandler()({
+      protocol: "https",
+      query: { code: "code", state },
+      headers: { cookie: `${getOAuthStateCookieName(true)}=secure-nonce` },
     }, response);
 
     expect(response.cleared).toBe(true);

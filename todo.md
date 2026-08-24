@@ -159,3 +159,13 @@
 - [x] Keep history, statistics, logout, and admin features protected for signed-in users
 - [x] Add guest-access tests and verify desktop/mobile guest flows
 - [x] Save a checkpoint after guest access is verified
+- [x] Audit current authentication, guest access, protected routes, prediction flow, admin flow, and responsive UI for remaining reproducible issues
+- [x] Fix every reproducible issue found during the audit without weakening privacy or authorization boundaries
+- [x] Re-run full checks, tests, production build, and browser regression verification
+- [ ] Save a final audit checkpoint and document any external OAuth prerequisites
+- [x] Make OAuth nonce-cookie naming valid for both HTTPS hosted login and HTTP localhost development
+- [x] Route global unauthorized and optional auth redirects through the repaired /login screen instead of bypassing runtime auth configuration
+- [x] Harden model-response parsing so malformed structured responses cannot crash the analysis result UI
+- [x] Re-verify the protected admin route for unauthenticated visitors
+- [x] Re-verify guest and dashboard responsive layouts at the mobile breakpoint
+- [ ] Save the post-audit checkpoint with remaining hosted OAuth prerequisites documented

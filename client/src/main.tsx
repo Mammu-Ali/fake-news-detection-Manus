@@ -5,7 +5,6 @@ import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
-import { startLogin } from "./const";
 import "./index.css";
 
 const queryClient = new QueryClient();
@@ -17,8 +16,9 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
   const isUnauthorized = error.message === UNAUTHED_ERR_MSG;
 
   if (!isUnauthorized) return;
+  if (window.location.pathname === "/login" || window.location.pathname === "/guest") return;
 
-  startLogin();
+  window.location.assign("/login?error=session_expired");
 };
 
 queryClient.getQueryCache().subscribe(event => {
