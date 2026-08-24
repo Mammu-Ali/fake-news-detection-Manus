@@ -114,4 +114,4 @@
 - [x] Respect reduced-motion preferences and verify desktop/mobile presentation
 - [x] Run checks and save a checkpoint for the animation update
 
-- [ ] Save a new checkpoint after the landing-button glitch animation update
+- [x] Save a new checkpoint after the landing-button glitch animation update
