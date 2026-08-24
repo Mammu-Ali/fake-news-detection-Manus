@@ -106,4 +106,12 @@
 ## Login verification follow-up
 
 - [x] Capture mobile and tablet screenshots for the landing and User Login flow
-- [ ] Save a new checkpoint after the login-page update is fully verified
+- [x] Save a new checkpoint after the login-page update is fully verified
+
+## Landing button interaction
+
+- [x] Add cyberpunk glitch hover animation to the “ENTER THE NODE” landing button
+- [x] Respect reduced-motion preferences and verify desktop/mobile presentation
+- [x] Run checks and save a checkpoint for the animation update
+
+- [ ] Save a new checkpoint after the landing-button glitch animation update
