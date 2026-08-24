@@ -137,3 +137,17 @@
 - [x] Verify the button build and interaction path, then save a checkpoint
 
 - [x] Save a fresh checkpoint after the final login-button repair changes
+
+## Local authentication fix
+
+- [x] Add a clearly labelled local demo-login fallback when Manus OAuth variables are unavailable
+- [x] Keep the fallback restricted to local development and prevent it from being enabled in production
+- [x] Verify local login reaches the dashboard and save a checkpoint
+
+## Local demo security hardening
+
+- [x] Restrict local demo login to localhost or 127.0.0.1 requests instead of all development hosts
+- [x] Add a negative test proving non-local origins cannot use local demo login
+- [x] Re-run verification and save a checkpoint for the local login fix
+- [x] Use a browser-compatible SameSite policy for insecure localhost demo sessions and verify the dashboard UI authenticates
+- [x] Re-run checks and save a final checkpoint after the browser cookie fix

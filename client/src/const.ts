@@ -12,6 +12,15 @@ export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 // call would desync it from an in-flight login and the callback would reject it
 // with "invalid oauth state". It returns void by design, so there is no URL to
 // stash across renders.
+export const hasOAuthConfig = Boolean(import.meta.env.VITE_OAUTH_PORTAL_URL && import.meta.env.VITE_APP_ID);
+
+export const startLocalDemoLogin = () => {
+  if (import.meta.env.MODE === "production") {
+    throw new Error("Local demo login is disabled in production builds.");
+  }
+  window.location.href = "/api/auth/local-demo?redirect=/";
+};
+
 export const startLogin = () => {
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;

@@ -11,7 +11,7 @@ VITE_APP_ID=your-manus-oauth-app-id
 VITE_OAUTH_PORTAL_URL=https://api.manus.im
 ```
 
-Do not commit the real values to GitHub. If the local clone does not have these variables, the User Login page now displays `OAuth is not configured for this local build.` instead of appearing unresponsive.
+Do not commit the real values to GitHub. For a localhost development clone without these variables, the User Login page uses a clearly labelled `LOCAL DEMO LOGIN` button. This creates a non-admin demo session only on `localhost`, `127.0.0.1`, or `::1`; it is disabled in production and on hosted preview domains. Configure the variables above when you need real Manus OAuth.
 
 ## Correct local origin
 

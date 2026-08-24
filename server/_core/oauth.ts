@@ -15,6 +15,31 @@ function redirectOAuthError(res: Response, code: string) {
 }
 
 export function registerOAuthRoutes(app: Express) {
+  if (process.env.NODE_ENV === "development") {
+    app.get("/api/auth/local-demo", async (req: Request, res: Response) => {
+      const hostname = req.hostname || req.headers.host?.split(":")[0];
+      if (hostname !== "localhost" && hostname !== "127.0.0.1" && hostname !== "[::1]") {
+        res.status(404).json({ error: "Local demo login is available only on localhost." });
+        return;
+      }
+      const openId = "local-demo-user";
+      await db.upsertUser({
+        openId,
+        name: "Local Demo User",
+        email: "local-demo@example.test",
+        loginMethod: "local-demo",
+        lastSignedIn: new Date(),
+      });
+      const sessionToken = await sdk.createSessionToken(openId, {
+        name: "Local Demo User",
+        expiresInMs: ONE_YEAR_MS,
+      });
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      res.redirect(302, "/dashboard");
+    });
+  }
+
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
