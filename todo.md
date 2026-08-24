@@ -95,3 +95,15 @@
 
 - [x] Add visible error handling and non-negative integer validation to admin metric submission
 - [x] Perform a systematic frontend-to-Flask API contract verification pass across auth, prediction, history, dataset, and metric routes
+
+## User login page
+
+- [x] Add a visible User Login entry point to the public landing screen
+- [x] Add a dedicated cyberpunk-styled login view that starts the existing OAuth flow
+- [x] Preserve protected dashboard routing and server-enforced administrator access
+- [x] Verify login navigation and responsive presentation, then save a checkpoint
+
+## Login verification follow-up
+
+- [x] Capture mobile and tablet screenshots for the landing and User Login flow
+- [ ] Save a new checkpoint after the login-page update is fully verified
