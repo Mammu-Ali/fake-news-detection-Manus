@@ -183,3 +183,7 @@
 - [x] Add automated regression tests for the reviewed security, correctness, performance, and architecture edge cases
 - [x] Run the complete test suite, typecheck, and production build after adding coverage
 - [x] Document the added test coverage and save a checkpoint
+- [x] Define unit, integration, and end-to-end coverage for the core article-analysis feature
+- [x] Add the most important happy-path, invalid-input, edge-case, error, authentication, and API/database-failure tests
+- [x] Run the complete test suite, typecheck, and production build
+- [x] Document the test matrix and save a checkpoint
