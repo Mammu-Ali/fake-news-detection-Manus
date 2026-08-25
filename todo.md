@@ -177,3 +177,9 @@
 - [x] Make dev and production npm scripts cross-platform for Windows so NODE_ENV does not prevent the server from starting
 - [x] Correct the local OAuth portal URL example and clarify localhost versus managed preview URLs
 - [x] Verify local startup, localhost root, local-demo login, and OAuth login handoff after the cross-platform fix
+- [x] Review current code for bugs, security issues, performance problems, architecture weaknesses, and duplicated logic
+- [x] Validate review findings with tests, logs, dependency, and configuration checks
+- [x] Deliver a prioritized senior-engineer review with Problem, Why, and Fix for each issue
+- [x] Add automated regression tests for the reviewed security, correctness, performance, and architecture edge cases
+- [x] Run the complete test suite, typecheck, and production build after adding coverage
+- [x] Document the added test coverage and save a checkpoint

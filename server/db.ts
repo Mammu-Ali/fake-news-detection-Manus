@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, like, lte, or } from "drizzle-orm";
+import { and, desc, eq, gte, like, lt, lte, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, predictions, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
@@ -53,6 +53,13 @@ export async function getUserByOpenId(openId: string) {
   return result[0];
 }
 
+export function getUtcDateBounds(options: { from?: string; to?: string } = {}) {
+  const from = options.from ? new Date(`${options.from}T00:00:00.000Z`) : undefined;
+  const toExclusive = options.to ? new Date(`${options.to}T00:00:00.000Z`) : undefined;
+  if (toExclusive) toExclusive.setUTCDate(toExclusive.getUTCDate() + 1);
+  return { from, toExclusive };
+}
+
 export async function listPredictions(userId: number, options: { search?: string; sort?: "newest" | "oldest" | "confidence"; verdict?: "all" | "Fake" | "Real"; minConfidence?: number; maxConfidence?: number; from?: string; to?: string } = {}) {
   const db = await getDb();
   if (!db) return [];
@@ -61,8 +68,9 @@ export async function listPredictions(userId: number, options: { search?: string
   if (options.verdict && options.verdict !== "all") filters.push(eq(predictions.verdict, options.verdict));
   if (options.minConfidence !== undefined) filters.push(gte(predictions.confidence, options.minConfidence));
   if (options.maxConfidence !== undefined) filters.push(lte(predictions.confidence, options.maxConfidence));
-  if (options.from) filters.push(gte(predictions.createdAt, new Date(`${options.from}T00:00:00`)));
-  if (options.to) filters.push(lte(predictions.createdAt, new Date(`${options.to}T23:59:59`)));
+  const dateBounds = getUtcDateBounds(options);
+  if (dateBounds.from) filters.push(gte(predictions.createdAt, dateBounds.from));
+  if (dateBounds.toExclusive) filters.push(lt(predictions.createdAt, dateBounds.toExclusive));
   const order = options.sort === "oldest" ? predictions.createdAt : options.sort === "confidence" ? predictions.confidence : desc(predictions.createdAt);
   return db.select().from(predictions).where(and(...filters)).orderBy(order);
 }
@@ -74,9 +82,10 @@ export function filterAndSortPredictions<T extends { verdict: "Fake" | "Real"; a
     const matchesMin = options.minConfidence === undefined || (row.confidence ?? 0) >= options.minConfidence;
     const matchesMax = options.maxConfidence === undefined || (row.confidence ?? 100) <= options.maxConfidence;
     const time = row.createdAt?.getTime() ?? 0;
-    const from = options.from ? new Date(`${options.from}T00:00:00`).getTime() : -Infinity;
-    const to = options.to ? new Date(`${options.to}T23:59:59`).getTime() : Infinity;
-    return matchesSearch && matchesVerdict && matchesMin && matchesMax && time >= from && time <= to;
+    const dateBounds = getUtcDateBounds(options);
+    const from = dateBounds.from?.getTime() ?? -Infinity;
+    const toExclusive = dateBounds.toExclusive?.getTime() ?? Infinity;
+    return matchesSearch && matchesVerdict && matchesMin && matchesMax && time >= from && time < toExclusive;
   });
   return [...filtered].sort((a, b) => options.sort === "oldest" ? (a.createdAt?.getTime() ?? 0) - (b.createdAt?.getTime() ?? 0) : options.sort === "confidence" ? (b.confidence ?? 0) - (a.confidence ?? 0) : (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0));
 }

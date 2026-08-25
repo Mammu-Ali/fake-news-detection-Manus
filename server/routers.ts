@@ -45,7 +45,7 @@ const fallbackAnalysis: ClassifiedResult = {
   signals: ["Insufficient model response", "Manual verification recommended"],
 };
 
-function normalizeAnalysis(value: unknown): ClassifiedResult {
+export function normalizeAnalysis(value: unknown): ClassifiedResult {
   if (!value || typeof value !== "object") return fallbackAnalysis;
   const candidate = value as Record<string, unknown>;
   if (candidate.verdict !== "Fake" && candidate.verdict !== "Real") return fallbackAnalysis;
@@ -107,7 +107,7 @@ export const appRouter = router({
   admin: router({
     datasets: router({
       list: adminProcedure.query(() => listDatasets()),
-      create: adminProcedure.input(z.object({ name: z.string().min(2).max(180), description: z.string().max(2000).default(""), fileName: z.string().min(1).max(255), fileContentBase64: z.string().optional(), recordCount: z.number().int().min(0), fakeCount: z.number().int().min(0), realCount: z.number().int().min(0), version: z.string().min(1).max(32) })).mutation(({ ctx, input }) => createDataset({ ...input, status: "ready", uploadedBy: ctx.user.id })),
+      create: adminProcedure.input(z.object({ name: z.string().min(2).max(180), description: z.string().max(2000).default(""), fileName: z.string().min(1).max(255).regex(/\.txt$/i, "Only .txt datasets are supported"), fileContentBase64: z.string().max(16_000_000).regex(/^[A-Za-z0-9+/]*={0,2}$/, "Dataset content must be valid base64").optional(), recordCount: z.number().int().min(0), fakeCount: z.number().int().min(0), realCount: z.number().int().min(0), version: z.string().min(1).max(32) })).mutation(({ ctx, input }) => createDataset({ ...input, status: "ready", uploadedBy: ctx.user.id })),
       archive: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => archiveDataset(input.id)),
       remove: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => deleteDataset(input.id)),
     }),
