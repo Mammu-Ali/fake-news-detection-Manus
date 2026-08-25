@@ -169,3 +169,8 @@
 - [x] Re-verify the protected admin route for unauthenticated visitors
 - [x] Re-verify guest and dashboard responsive layouts at the mobile breakpoint
 - [x] Save the post-audit checkpoint with remaining hosted OAuth prerequisites documented
+- [x] Diagnose and repair the newly reported User Login failure
+- [x] Audit and fix any other reproducible runtime, authorization, validation, or UI errors
+- [x] Re-run full checks, tests, production build, and browser regression flows
+- [x] Save a fresh checkpoint with the repaired login and audit results
+- [x] Change the OAuth handoff from the blank `/app-auth` route to the provider’s working `/login` route and add regression coverage

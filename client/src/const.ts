@@ -1,4 +1,4 @@
-import { encodeOAuthState, getOAuthStateCookieName } from "@shared/const";
+import { buildOAuthLoginUrl, encodeOAuthState, getOAuthStateCookieName } from "@shared/const";
 
 export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
@@ -43,11 +43,5 @@ export const startLogin = (runtimeConfig?: Partial<RuntimeAuthConfig>) => {
   document.cookie = `${stateCookieName}=${nonce}; ${cookieAttributes}`;
   const state = encodeOAuthState({ redirectUri, nonce });
 
-  const url = new URL(`${oauthPortalUrl}/app-auth`);
-  url.searchParams.set("appId", appId);
-  url.searchParams.set("redirectUri", redirectUri);
-  url.searchParams.set("state", state);
-  url.searchParams.set("type", "signIn");
-
-  window.location.href = url.toString();
+  window.location.href = buildOAuthLoginUrl({ oauthPortalUrl, appId, redirectUri, state });
 };

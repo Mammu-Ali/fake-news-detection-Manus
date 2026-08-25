@@ -13,6 +13,25 @@ export const OAUTH_STATE_COOKIE_INSECURE = "oauth_state";
 export const getOAuthStateCookieName = (secure: boolean) =>
   secure ? OAUTH_STATE_COOKIE : OAUTH_STATE_COOKIE_INSECURE;
 
+export const buildOAuthLoginUrl = ({
+  oauthPortalUrl,
+  appId,
+  redirectUri,
+  state,
+}: {
+  oauthPortalUrl: string;
+  appId: string;
+  redirectUri: string;
+  state: string;
+}) => {
+  const url = new URL(`${oauthPortalUrl.replace(/\/+$/, "")}/login`);
+  url.searchParams.set("appId", appId);
+  url.searchParams.set("redirectUri", redirectUri);
+  url.searchParams.set("state", state);
+  url.searchParams.set("type", "signIn");
+  return url.toString();
+};
+
 // `state` carries the callback redirect URI (used at token exchange) plus the
 // CSRF nonce. Defined here so the client encoder and server decoder never drift.
 export type OAuthState = { redirectUri: string; nonce?: string };
