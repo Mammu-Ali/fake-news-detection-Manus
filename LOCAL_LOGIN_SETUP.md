@@ -1,6 +1,6 @@
 # Local User Login Setup
 
-The managed frontend uses Manus OAuth. A local clone must receive the same public Vite variables that are injected automatically in the managed project environment.
+The managed frontend uses Manus OAuth. A local clone must receive the same public Vite variables that are injected automatically in the managed project environment. The interactive sign-in page is hosted at `https://manus.im`; `https://api.manus.im` is the server API host and must not be used as the browser login portal.
 
 ## Required variables
 
@@ -8,7 +8,7 @@ Create the local environment file expected by the project tooling and provide:
 
 ```env
 VITE_APP_ID=your-manus-oauth-app-id
-VITE_OAUTH_PORTAL_URL=https://api.manus.im
+VITE_OAUTH_PORTAL_URL=https://manus.im
 ```
 
 Do not commit the real values to GitHub. For a localhost development clone without these variables, the User Login page uses a clearly labelled `LOCAL DEMO LOGIN` button. This creates a non-admin demo session only on `localhost`, `127.0.0.1`, or `::1`; it is disabled in production and on hosted preview domains. Configure the variables above when you need real Manus OAuth.

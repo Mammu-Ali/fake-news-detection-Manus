@@ -174,3 +174,6 @@
 - [x] Re-run full checks, tests, production build, and browser regression flows
 - [x] Save a fresh checkpoint with the repaired login and audit results
 - [x] Change the OAuth handoff from the blank `/app-auth` route to the provider’s working `/login` route and add regression coverage
+- [x] Make dev and production npm scripts cross-platform for Windows so NODE_ENV does not prevent the server from starting
+- [x] Correct the local OAuth portal URL example and clarify localhost versus managed preview URLs
+- [x] Verify local startup, localhost root, local-demo login, and OAuth login handoff after the cross-platform fix
